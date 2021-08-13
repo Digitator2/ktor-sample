@@ -96,7 +96,13 @@ fun Application.configureRouting() {
     //conn = DriverManager.getConnection("jdbc:h2:mem:", "", "")  //
 
     //conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:8080/test", "postgres", "")  //
-    conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1/test", "postgres", "")  //
+    //conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1/test", "postgres", "")  //
+
+
+    val URL_DB = System.getenv("DATABASE_URL") ?: "jdbc:postgresql://127.0.0.1/test"
+    val USERNAME = System.getenv("DATABASE_USERNAME") ?: "postgres"
+    val PASSWORD = System.getenv("DATABASE_PASSWORD") ?: ""
+    conn = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD)  //
 
 
 // *** postgres Sample
