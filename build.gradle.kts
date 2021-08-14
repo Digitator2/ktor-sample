@@ -37,7 +37,7 @@ dependencies {
     testImplementation("com.h2database:h2:1.4.200")
     implementation("com.h2database:h2:1.4.200")
 
-    //implementation("org.postgresql:postgresql:42.2.23" )
+    implementation("org.postgresql:postgresql:42.2.23" )
 
 }
 

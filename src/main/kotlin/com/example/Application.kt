@@ -11,8 +11,8 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
-    Class.forName("org.h2.Driver")
-    //Class.forName("org.postgresql.Driver");
+    //Class.forName("org.h2.Driver")
+    Class.forName("org.postgresql.Driver");
     configureRouting()
 }
 

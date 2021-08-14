@@ -15,18 +15,20 @@ import kotlinx.html.dom.document
 import java.net.URI
 import java.sql.*
 
-/*
+
 import com.example.postgres.*
 import com.example.postgres.Pg.getConnection
 import com.example.postgres.Pg.createTableUsers
 import com.example.postgres.Pg.insert
- */
 
+
+/*
 import com.example.h2.*
 import com.example.h2.H2
 import com.example.h2.H2.getConnection
 import com.example.h2.H2.createTableUsers
 import com.example.h2.H2.insert
+ */
 
 
 data class BData(val a:String, val b:String, val other:SData)
@@ -102,8 +104,8 @@ fun Application.configureRouting() {
 
     log.info("1")
 
-    //conn = Pg.getConnection()
-    conn = H2.getConnection()
+    conn = Pg.getConnection()
+    //conn = H2.getConnection()
 
     log.info("connected!")
 

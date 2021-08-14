@@ -55,7 +55,7 @@ object Pg : Db {
 
     override fun Statement.insert(tableName:String, fields:Array<String>, values:Array<String>):Boolean {
         //var str:String = ""
-        val strFields = values.fold("") { a, e -> a + "$e," }.trimEnd(',')
+        val strFields = fields.fold("") { a, e -> a + "$e," }.trimEnd(',')
         val strValues = values.fold("") { a, e -> a + "\'$e\'," }.trimEnd(',')
         return this.execute("insert into $tableName($strFields) values($strValues) ")
     }
