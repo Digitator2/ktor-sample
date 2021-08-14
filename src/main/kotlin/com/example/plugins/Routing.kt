@@ -15,6 +15,19 @@ import kotlinx.html.dom.document
 import java.net.URI
 import java.sql.*
 
+/*
+import com.example.postgres.*
+import com.example.postgres.Pg.getConnection
+import com.example.postgres.Pg.createTableUsers
+import com.example.postgres.Pg.insert
+ */
+
+import com.example.h2.*
+import com.example.h2.H2
+import com.example.h2.H2.getConnection
+import com.example.h2.H2.createTableUsers
+import com.example.h2.H2.insert
+
 
 data class BData(val a:String, val b:String, val other:SData)
 data class SData(val text:String)
@@ -22,8 +35,6 @@ data class SData(val text:String)
 data class User(val id:Int, val name:String)
 
 fun Application.configureRouting() {
-
-
 
     install(ContentNegotiation) {
         gson {
@@ -72,7 +83,6 @@ fun Application.configureRouting() {
             }
         }
 
-
     }
 
     // Transactions
@@ -88,73 +98,22 @@ fun Application.configureRouting() {
     var conn: Connection? = null
     //val stmt: Statement? = null
 
-    // http://www.h2database.com/html/quickstart.html
-    // http://www.h2database.com/html/tutorial.html#connecting_using_jdbc
-    // http://h2database.com/html/commands.html
-    //conn = DriverManager.getConnection("jdbc:h2:~/test", "", "")  // "jdbc:h2:mem:"
-    //conn = DriverManager.getConnection("jdbc:h2:mem:", "", "")  //
 
-    //conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:8080/test", "postgres", "")  //
-    //conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1/test", "postgres", "")  //
-
-
-    //val URL_DB = System.getenv("DATABASE_URL") ?: "jdbc:postgresql://127.0.0.1/test"
-    //val USERNAME = System.getenv("DATABASE_USERNAME") ?: "postgres"
-    //val PASSWORD = System.getenv("DATABASE_PASSWORD") ?: ""
-    //conn = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD)  //
-
-    // https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-java
 
     log.info("1")
 
-    val localStringConn = "postgres://postgres:@127.0.0.1:80/test"
-
-    var sslUse = "?sslmode=require\""
-    val env = System.getenv("DATABASE_URL")
-
-
-
-    val dbUri = URI ( if(env == null){
-        sslUse = ""
-        localStringConn
-    }else{ env } )
-
-
-
-    //val dbUri = URI(System.getenv("DATABASE_URL") ?: localStringConn )
-
-    //val dbUri = URI("postgres://vjvxwkhqjuamfz:3c0b80b92e0918fb1bccac2cb7ff27109c954d98a6974d404d00a053284e3a04@ec2-3-237-55-151.compute-1.amazonaws.com:5432/dcqfd4t5v0394n")
-
-    val username: String = dbUri.getUserInfo().split(":").get(0)
-    val password: String = dbUri.getUserInfo().split(":").get(1)
-    val dbUrl = "jdbc:postgresql://" +
-            dbUri.getHost() + (if(sslUse!="") { ":" + dbUri.getPort() } else "") + dbUri.getPath().toString() + sslUse
-
-
-    log.info("dbUrl=$dbUrl  username=$username  password=$password")
-
-    //println("$dbUrl $username $password ")
-    conn = DriverManager.getConnection(dbUrl, username, password)
-    //val conn:Connection?
-
+    //conn = Pg.getConnection()
+    conn = H2.getConnection()
 
     log.info("connected!")
 
 // *** postgres Sample
 
-    var stm = conn.createStatement()
-    //stm.execute("begin")
+    val stm = conn.createStatement()
     stm.execute("drop table if exists users;")
-    stm.execute("create table users (id serial primary key , name varchar (255));")
-    // create table if not exists my(id int auto_increment primary key,s text);
-
-    //stm.execute("commit ")
-    //stm.execute("begin ")
-
-    //stm = conn.createStatement()
-    //stm.execute("insert into users values(188,'one')")
-
-    //stm.execute("rollback ")
+    stm.createTableUsers()
+    stm.execute("insert into users values(188,'one')")
+    stm.execute("insert into users(name) values('two')")
 
     log.info("st1 passed")
 
@@ -285,7 +244,6 @@ routing {
 
         val id = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.NotFound)
 
-
         val row = stm.executeQuery("select id, name from users where id = $id")
 
         try {
@@ -302,14 +260,24 @@ routing {
 
     post("/users/"){
 
+        println("u1")
+
         val nameNewUser = call.request.queryParameters["name"] ?: return@post call.respond(HttpStatusCode.NoContent)
 
+        println("u2")
+
         try {
+
+            println("u3")
+
             //conn.autoCommit = false
 
-            stm.execute("begin")
+            //stm.execute("begin")
 
-            stm.execute( "insert into users(name) values(\'$nameNewUser\');" )
+            //stm.execute( "insert into users(name) values(\'$nameNewUser\');" )
+            val ri = stm.insert("users",arrayOf("name"), arrayOf("$nameNewUser"))
+            //if(!ri) throw Exception("abcdef")
+            //println("insert result $ri")
 
             val row = stm.executeQuery("select MAX(id) from users" )
 
@@ -319,14 +287,15 @@ routing {
 
             if (row.next()) {
                 val r = row.getInt(1)
-                stm.execute("commit ")
+                //stm.execute("commit ")
                 call.respondText("{id:$r}")
 
             } else throw Exception("cannot get id for new created user")
 
         }catch (e:Exception){
-            stm.execute("rollback")
+            //stm.execute("rollback")
             //conn.rollback();
+            println("${e.message}")
             call.respond(HttpStatusCode.InternalServerError)
         }
 
@@ -340,12 +309,11 @@ routing {
     get ("/dump/"){
 
 
-        val row = stm.executeQuery("script to '/dump.txt'")
-        //val fileContent = this::class.java.getResource("/dump.txt").readText()
-        //val fileContent = this::javaClass.getResource("/dump.txt").readText()
+        //val row = stm.executeQuery("script to '/dump.txt'")
+        //val fileContent = if(row.next()) { row.getString(1) } else ""
+        //call.respondText(fileContent)
 
-        val fileContent = if(row.next()) { row.getString(1) } else ""
-        call.respondText(fileContent)
+        call.respondText("not implemented")
 
     }
 

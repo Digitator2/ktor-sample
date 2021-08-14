@@ -5,7 +5,7 @@ val logback_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.5.21"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.5.21"
+    //id("org.jetbrains.kotlin.plugin.jpa") version "1.5.21"
 }
 
 group = "com.example"
@@ -13,7 +13,7 @@ version = "0.0.1"
 application {
     //mainClass.set("com.example.ApplicationKt")
     mainClass.set("io.ktor.server.netty.EngineMain")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=true")
+    //applicationDefaultJvmArgs = listOf("-Dio.ktor.development=true")
 }
 
 repositories {
@@ -34,10 +34,10 @@ dependencies {
 
     implementation("io.ktor:ktor-auth:$ktor_version")
 
-    //testImplementation("com.h2database:h2:1.4.200")
-    //implementation("com.h2database:h2:1.4.200")
+    testImplementation("com.h2database:h2:1.4.200")
+    implementation("com.h2database:h2:1.4.200")
 
-    implementation("org.postgresql:postgresql:42.2.23" )
+    //implementation("org.postgresql:postgresql:42.2.23" )
 
 }
 
