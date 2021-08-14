@@ -105,6 +105,8 @@ fun Application.configureRouting() {
 
     // https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-java
 
+    log.info("1")
+
     val localStringConn = "postgres://postgres:@127.0.0.1:80/test"
 
     var sslUse = "?sslmode=require\""
@@ -118,6 +120,7 @@ fun Application.configureRouting() {
     }else{ env } )
 
 
+
     //val dbUri = URI(System.getenv("DATABASE_URL") ?: localStringConn )
 
     //val dbUri = URI("postgres://vjvxwkhqjuamfz:3c0b80b92e0918fb1bccac2cb7ff27109c954d98a6974d404d00a053284e3a04@ec2-3-237-55-151.compute-1.amazonaws.com:5432/dcqfd4t5v0394n")
@@ -128,9 +131,14 @@ fun Application.configureRouting() {
             dbUri.getHost() + (if(sslUse!="") { ":" + dbUri.getPort() } else "") + dbUri.getPath().toString() + sslUse
 
 
+    log.info("dbUrl=$dbUrl  username=$username  password=$password")
+
     //println("$dbUrl $username $password ")
     conn = DriverManager.getConnection(dbUrl, username, password)
+    //val conn:Connection?
 
+
+    log.info("connected!")
 
 // *** postgres Sample
 
@@ -148,7 +156,7 @@ fun Application.configureRouting() {
 
     //stm.execute("rollback ")
 
-
+    log.info("st1 passed")
 
     val rs = stm.executeQuery("select * from users")
     if (rs.next()) {
@@ -156,6 +164,8 @@ fun Application.configureRouting() {
         // rs.getString("name")
         println(rs.getInt(1))
     }
+
+    log.info("st2 passed")
 
 // *** H2 Sample
 /*
