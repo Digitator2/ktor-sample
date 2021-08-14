@@ -12,9 +12,8 @@ import io.ktor.routing.*
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.dom.document
-import java.lang.StringBuilder
+import java.net.URI
 import java.sql.*
-import java.util.concurrent.atomic.AtomicInteger
 
 
 data class BData(val a:String, val b:String, val other:SData)
@@ -99,10 +98,33 @@ fun Application.configureRouting() {
     //conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1/test", "postgres", "")  //
 
 
-    val URL_DB = System.getenv("DATABASE_URL") ?: "jdbc:postgresql://127.0.0.1/test"
-    val USERNAME = System.getenv("DATABASE_USERNAME") ?: "postgres"
-    val PASSWORD = System.getenv("DATABASE_PASSWORD") ?: ""
-    conn = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD)  //
+    //val URL_DB = System.getenv("DATABASE_URL") ?: "jdbc:postgresql://127.0.0.1/test"
+    //val USERNAME = System.getenv("DATABASE_USERNAME") ?: "postgres"
+    //val PASSWORD = System.getenv("DATABASE_PASSWORD") ?: ""
+    //conn = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD)  //
+
+    // https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-java
+
+    val localStringConn = "postgres://postgres:@127.0.0.1:80/test"
+
+    var sslUse = "?sslmode=require\""
+    val env = System.getenv("DATABASE_URL")
+
+    val dbUri = URI ( if(env == null){
+        sslUse = ""
+        localStringConn
+    }else{ env } )
+
+    //val dbUri = URI(System.getenv("DATABASE_URL") ?: localStringConn )
+
+    val username: String = dbUri.getUserInfo().split(":").get(0)
+    val password: String = dbUri.getUserInfo().split(":").get(1)
+    val dbUrl = "jdbc:postgresql://" +
+            dbUri.getHost() + (if(sslUse!="") { ":" + dbUri.getPort() } else "") + dbUri.getPath().toString() + sslUse
+
+
+    println("$dbUrl $username $password ")
+    conn = DriverManager.getConnection(dbUrl, username, password)
 
 
 // *** postgres Sample
@@ -176,13 +198,13 @@ routing {
 //            println("${call.receiveText()}")
 //        }
 
-    authenticate("auth-user") {
+    //authenticate("auth-user") {
         get("/") {
             //println("ddd ${call.receiveText()}")
             call.respondText("Hello World!")
 
         }
-    }
+    //}
 
     //authenticate("auth-form") {
     authenticate("auth-basic") {
