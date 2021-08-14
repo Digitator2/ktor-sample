@@ -110,12 +110,17 @@ fun Application.configureRouting() {
     var sslUse = "?sslmode=require\""
     val env = System.getenv("DATABASE_URL")
 
+
+
     val dbUri = URI ( if(env == null){
         sslUse = ""
         localStringConn
     }else{ env } )
 
+
     //val dbUri = URI(System.getenv("DATABASE_URL") ?: localStringConn )
+
+    //val dbUri = URI("postgres://vjvxwkhqjuamfz:3c0b80b92e0918fb1bccac2cb7ff27109c954d98a6974d404d00a053284e3a04@ec2-3-237-55-151.compute-1.amazonaws.com:5432/dcqfd4t5v0394n")
 
     val username: String = dbUri.getUserInfo().split(":").get(0)
     val password: String = dbUri.getUserInfo().split(":").get(1)
@@ -123,7 +128,7 @@ fun Application.configureRouting() {
             dbUri.getHost() + (if(sslUse!="") { ":" + dbUri.getPort() } else "") + dbUri.getPath().toString() + sslUse
 
 
-    println("$dbUrl $username $password ")
+    //println("$dbUrl $username $password ")
     conn = DriverManager.getConnection(dbUrl, username, password)
 
 

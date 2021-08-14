@@ -7,10 +7,10 @@ import io.ktor.application.*
 import java.sql.DriverManager
 
 
-fun main(args: Array<String>): Unit {
-    Class.forName("org.postgresql.Driver");
-    io.ktor.server.netty.EngineMain.main(args)
-}
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+
+
+//Class.forName("org.postgresql.Driver");
 
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
