@@ -15,20 +15,20 @@ import kotlinx.html.dom.document
 import java.net.URI
 import java.sql.*
 
-
-import com.example.postgres.*
-import com.example.postgres.Pg.getConnection
-import com.example.postgres.Pg.createTableUsers
-import com.example.postgres.Pg.insert
-
-
 /*
+import com.example.postgres.*
+import com.example.postgres.Db.getConnection
+import com.example.postgres.Db.createTableUsers
+import com.example.postgres.Db.insert
+*/
+
+
 import com.example.h2.*
-import com.example.h2.H2
-import com.example.h2.H2.getConnection
-import com.example.h2.H2.createTableUsers
-import com.example.h2.H2.insert
- */
+import com.example.h2.Db
+import com.example.h2.Db.getConnection
+import com.example.h2.Db.createTableUsers
+import com.example.h2.Db.insert
+
 
 
 data class BData(val a:String, val b:String, val other:SData)
@@ -104,8 +104,7 @@ fun Application.configureRouting() {
 
     log.info("1")
 
-    conn = Pg.getConnection()
-    //conn = H2.getConnection()
+    conn = Db.getConnection()
 
     log.info("connected!")
 
@@ -128,51 +127,8 @@ fun Application.configureRouting() {
 
     log.info("st2 passed")
 
-// *** H2 Sample
-/*
-var stm = conn.createStatement()
-stm.execute("drop table if exists users;")
-stm.execute("create table users (id int primary key auto_increment not null  , name varchar (255));")
-// create table if not exists my(id int auto_increment primary key,s text);
-
-//stm = conn.createStatement()
-stm.execute("insert into users values(188,'one')")
-
-
-
-val rs = stm.executeQuery("select * from users")
-if (rs.next()) {
-    // rs.getInt("id")
-    // rs.getString("name")
-    println(rs.getInt(1))
-}
-*/
-
-/*
-var url = "jdbc:h2:mem:"
-try {
-    DriverManager.getConnection(url).use { con ->
-        con.createStatement().use { stm ->
-            stm.executeQuery("SELECT 1+1").use { rs ->
-                if (rs.next()) {
-                    println(rs.getInt(1))
-                }
-            }
-        }
-    }
-} catch (ex: SQLException) {
-    //val lgr: Unit = Logger.getLogger(JavaSeH2Memory::class.java.getName())
-    //lgr.log(Level.SEVERE, ex.message, ex)
-    println(ex)
-}*/
-
-//Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver")
 
 routing {
-
-//        get{
-//            println("${call.receiveText()}")
-//        }
 
     //authenticate("auth-user") {
         get("/") {
@@ -190,12 +146,9 @@ routing {
     }
 
     post("/some/") {
-
         val uri = call.request.uri //    "/some"
         val data = call.request.header("data") // берем произвольную переменную из заголовка
-
         val price = call.request.queryParameters["price"] //  берем параметр из URL /some?price=1000
-        //val price = 0
 
         //val body = call.receiveText() // из тела запроса в строку, ошибки нет, если не заполнено.
         //val body = call.receive<BData>() // из тела запроса, в объект пишем, по совпадающим полям ! исключение возможно, если не подходит
@@ -205,16 +158,12 @@ routing {
                BData("","", SData(""))
             }// из тела запроса, в объект пишем, по совпадающим полям ! исключение возможно, если не подходит
 
-        //println(body.toString())
         call.respondText("uri: $uri \n  data: $data \n  RT: $body \n price: $price")
-        //call.respondText("uri: $uri    data: $data")
-
     }
 
     get("/users/"){
 
         // get all users
-
         val row = stm.executeQuery("select id, name from users")
 
         val sb = StringBuffer()
@@ -237,7 +186,6 @@ routing {
         //sb.removePrefix(",,")
         sb.append( "]}" )
         call.respondText(sb.toString())
-
     }
 
     get("/users/{id}"){
@@ -278,8 +226,10 @@ routing {
 
             //stm.execute( "insert into users(name) values(\'$nameNewUser\');" )
             val ri = stm.insert("users",arrayOf("name"), arrayOf("$nameNewUser"))
+
+            //log("result: ")
             //if(!ri) throw Exception("abcdef")
-            //println("insert result $ri")
+            println("insert result $ri")
 
             val row = stm.executeQuery("select MAX(id) from users" )
 

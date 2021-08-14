@@ -2,7 +2,7 @@ package com.example
 
 import java.sql.*
 
-interface Db {
+interface IDb {
 
     fun getConnection(): Connection
 

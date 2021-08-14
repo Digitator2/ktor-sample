@@ -4,7 +4,7 @@ import io.ktor.application.*
 import java.net.URI
 import java.sql.*
 
-import com.example.Db
+import com.example.IDb
 
 //conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:8080/test", "postgres", "")  //
 //conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1/test", "postgres", "")  //
@@ -17,9 +17,11 @@ import com.example.Db
 
 // https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-java
 
-object Pg : Db {
+object Db : IDb {
 
     override fun getConnection():Connection {
+
+        Class.forName("org.postgresql.Driver");
 
         val localStringConn = "postgres://postgres:@127.0.0.1:80/test"
 
@@ -57,7 +59,8 @@ object Pg : Db {
         //var str:String = ""
         val strFields = fields.fold("") { a, e -> a + "$e," }.trimEnd(',')
         val strValues = values.fold("") { a, e -> a + "\'$e\'," }.trimEnd(',')
-        return this.execute("insert into $tableName($strFields) values($strValues) ")
+        val str = "insert into $tableName($strFields) values($strValues) "
+        return this.execute(str)
     }
 
 }
