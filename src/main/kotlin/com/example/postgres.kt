@@ -37,11 +37,15 @@ object Db : IDb {
 
         //val dbUri = URI("postgres://vjvxwkhqjuamfz:3c0b80b92e0918fb1bccac2cb7ff27109c954d98a6974d404d00a053284e3a04@ec2-3-237-55-151.compute-1.amazonaws.com:5432/dcqfd4t5v0394n")
 
+        println( "HOST: $dbUri.getHost()" )
+
         val username: String = dbUri.getUserInfo().split(":").get(0)
         val password: String = dbUri.getUserInfo().split(":").get(1)
         val dbUrl = "jdbc:postgresql://" +
                 dbUri.getHost() + (if(sslUse!="") { ":" + dbUri.getPort() } else "") + dbUri.getPath().toString() + sslUse
 
+        println( "username: $username" )
+        println( "password: $password" )
 
         //log.info("dbUrl=$dbUrl  username=$username  password=$password")
 
