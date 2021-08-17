@@ -15,20 +15,20 @@ import kotlinx.html.dom.document
 import java.net.URI
 import java.sql.*
 
-
+/*
 import com.example.postgres.*
 import com.example.postgres.Db.getConnection
 import com.example.postgres.Db.createTableUsers
 import com.example.postgres.Db.insert
+*/
 
 
-/*
 import com.example.h2.*
 import com.example.h2.Db
 import com.example.h2.Db.getConnection
 import com.example.h2.Db.createTableUsers
 import com.example.h2.Db.insert
-*/
+
 
 
 data class BData(val a:String, val b:String, val other:SData)
