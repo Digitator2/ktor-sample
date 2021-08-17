@@ -25,7 +25,7 @@ object Db : IDb {
 
         val localStringConn = "postgres://postgres:@127.0.0.1:80/test"
 
-        var sslUse = "?sslmode=require\""
+        var sslUse = "?sslmode=require"
         val env = System.getenv("DATABASE_URL")
 
         val dbUri = URI ( if(env == null){
