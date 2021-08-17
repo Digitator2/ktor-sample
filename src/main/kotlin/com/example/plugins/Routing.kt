@@ -163,6 +163,13 @@ routing {
 
     get("/users/"){
 
+        val envD = System.getenv("DATABASE_URL")
+        val envP = System.getenv("DATABASE_PASSWORD")
+        val envN = System.getenv("DATABASE_USERNAME")
+
+        println("DATABASE_URL: $envD\nDATABASE_PASSWORD: $envP\n" +
+                "DATABASE_USERNAME: $envN ")
+
         // get all users
         val row = stm.executeQuery("select id, name from users")
 
@@ -215,6 +222,8 @@ routing {
         val nameNewUser = call.request.queryParameters["name"] ?: return@post call.respond(HttpStatusCode.NoContent)
 
         println("u2")
+
+
 
         try {
 
