@@ -111,10 +111,10 @@ fun Application.configureRouting() {
 // *** postgres Sample
 
     val stm = conn.createStatement()
-    stm.execute("drop table if exists users;")
+    //stm.execute("drop table if exists users;")
     stm.createTableUsers()
-    stm.execute("insert into users values(188,'one')")
-    stm.execute("insert into users(name) values('two')")
+    //stm.execute("insert into users values(188,'one')")
+    //stm.execute("insert into users(name) values('two')")
 
     log.info("st1 passed")
 

@@ -57,7 +57,7 @@ object Db : IDb {
 
     override fun Statement.createTableUsers():Boolean {
 
-        return this.execute("create table users (id serial primary key , name varchar (255));")
+        return this.execute("create table IF NOT EXISTS users (id serial primary key , name varchar (255));")
 
     }
 
